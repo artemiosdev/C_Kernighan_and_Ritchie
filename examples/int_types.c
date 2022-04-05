@@ -1,21 +1,21 @@
 #include <stdio.h>
 
-// библиотека длЯ значений bool
+// Р±РёР±Р»РёРѕС‚РµРєР° РґР»СЏ Р·РЅР°С‡РµРЅРёР№ bool
 #include <stdbool.h>
 
-// библиотека длЯ int с конкретными кратными байтовыми значениЯми по типу int8, int16, int32, int64
+// Р±РёР±Р»РёРѕС‚РµРєР° РґР»СЏ int СЃ РєРѕРЅРєСЂРµС‚РЅС‹РјРё РєСЂР°С‚РЅС‹РјРё Р±Р°Р№С‚РѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕ С‚РёРїСѓ int8, int16, int32, int64
 #include <inttypes.h>
 
 int main(int argc, char* argv[])
 {
     char c;
     int i;
-
+    
     int8_t i8;
     int16_t i16;
     int32_t i32;
     int64_t i64;
-
+    
     double d;
     bool b;
 
