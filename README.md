@@ -1,5 +1,3 @@
-
-
 ## The C programming Language
 
 Использованные источники:
@@ -2100,8 +2098,36 @@ void itoa(int n, char s[])
 
 ---
 ### Инструкции break и continue
-Иногда бывает удобно выйти из цикла не по результату проверки, осуществляемой в начале или в конце цикла, а каким-то другим способом. Такую возможность для циклов `for`, `while` и `do-while`, а также для переключателя `switch` предоставляет инструкция `break`. Эта инструкция вызывает немедленный выход из самого внутреннего из объемлющих ее циклов или переключателей.
+Иногда бывает удобно выйти из цикла не по результату проверки, осуществляемой в начале или в конце цикла, а каким-то другим способом. Такую возможность для циклов `for`, `while` и `do-while`, а также для переключателя `switch` предоставляет инструкция `break`. Эта инструкция вызывает немедленный выход из самого внутреннего из объемлющих ее циклов или переключателей. По типу `goto` выход за пределы тела цикла на следующий оператор.
 
+Example:
+
+```C
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    while (1)
+    {
+        int x;
+        scanf("%d", &x);
+        if (x == 0) break;
+        printf("Number %d in hexadecimal is %X.\n", x, x);
+    }
+    return 0;
+}
+```
+Result:
+
+```bash
+15
+Number 15 in hexadecimal is F.
+5
+Number 5 in hexadecimal is 5.
+-55
+Number -55 in hexadecimal is FFFFFFC9.
+```
+
+---
 Следующая функция, `trim`, удаляет из строки завершающие пробелы, табуляции, символы новой строки; `break` используется в ней для выхода из цикла по первому обнаруженному справа символу, отличному от названных.
 
 ```C
@@ -2118,7 +2144,79 @@ int trim(char s[])
 ```
 С помощью функции `strlen` можно получить длину строки. Цикл `for` просматривает его в обратном порядке, начиная с конца, до тех пор, пока не встретится символ, отличный от пробела, табуляции и новой строки. Цикл прерывается, как только такой символ обнаружится или `n` станет отрицательным (т. е. вся строка будет просмотрена). Убедитесь, что функция ведет себя правильно и в случаях, когда строка пуста или состоит только из символов-разделителей.
 
-Инструкция `continue` в чем-то похожа на `break`, но применяется гораздо реже. Она вынуждает ближайший объемлющий ее цикл (`for`, `while` или `do-while`) начать следующий шаг итерации. Для `while` и `do-while` это означает немедленный переход к проверке условия, а для `for` - к приращению шага. Инструкцию `continue` можно применять только к циклам, но не к `switch`. Внутри переключателя `switch`, расположенного в цикле, она вызовет переход к следующей итерации этого цикла.
+---
+Example with prime break:
+Программа работает, НО это не оптимальный вариант, для примера он показателен, НО лучше здесь применить функцию.
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+
+int main(int argc, char* argv[])
+{
+    int x;
+    printf("Enter number to check for simplicity:");
+    scanf("%d", &x);
+
+    bool is_prime = true;
+    for(int divisor = 2; divisor*divisor <= x; ++divisor)
+        if (x%divisor == 0)
+        {
+            is_prime = false;
+            break;
+        }
+
+    if (is_prime)
+        printf("Number %d is prime!\n", x);
+    else
+        printf("Number %d is not prime...\n", x);
+    return 0;
+}
+```
+Result:
+```bash
+Enter number to check for simplicity:13
+Number 13 is prime!
+
+or
+
+Enter number to check for simplicity:12
+Number 12 is not prime...
+```
+Вот пример использования функции для той же задачи:
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+
+bool is_prime_number(int x)
+{
+    for(int divisor = 2;
+        divisor*divisor <= x; ++divisor)
+        if (x%divisor == 0)
+            return false;
+    return true;
+}
+
+int main(int argc, char* argv[])
+{
+    int x;
+    printf("Enter number to check for simplicity:");
+    scanf("%d", &x);
+
+    if (is_prime_number(x))
+        printf("Number %d is prime!\n", x);
+    else
+        printf("Number %d is not prime...\n", x);
+
+    return 0;
+}
+```
+
+---
+Инструкция `continue` в чем-то похожа на `break`, но применяется гораздо реже. Она вынуждает ближайший объемлющий ее цикл (`for`, `while` или `do-while`) начать следующий шаг итерации. Телепортирует нас к началу следующей итерации, к условию цикла. Для `while` и `do-while` это означает немедленный переход к проверке условия, а для `for` - к приращению шага. Благодаря `continue` мы можем избежать ветвления, и лишних вложенных `if`. 
+
+Инструкцию `continue` можно применять только к циклам, но не к `switch`. Внутри переключателя `switch`, расположенного в цикле, она вызовет переход к следующей итерации этого цикла.
 
 Вот фрагмент программы, обрабатывающий только неотрицательные элементы массива a (отрицательные пропускаются).
 
@@ -2129,6 +2227,50 @@ for (i = 0; i < n; i++) {
     ...           /* обработка положительных элементов */
 }
 ```
+
+Example:
+
+```C
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    for(int i = 1; i < 20; ++i)
+    {
+        if (i == 13) continue;  // Avoid number 13.
+        if (i%7 == 0) continue;  // Skip multiples of 7.
+        printf("Number i = %d. ", i);
+        if (i%3 == 0)
+            printf("It is a multiple of 3!\n", i);
+        else
+            printf("It's not a multiple of 3...\n", i);
+    }
+    return 0;
+}
+```
+Result:
+
+```bash
+Number i = 1. It's not a multiple of 3...
+Number i = 2. It's not a multiple of 3...
+Number i = 3. It is a multiple of 3!
+Number i = 4. It's not a multiple of 3...
+Number i = 5. It's not a multiple of 3...
+Number i = 6. It is a multiple of 3!
+Number i = 8. It's not a multiple of 3...
+Number i = 9. It is a multiple of 3!
+Number i = 10. It's not a multiple of 3...
+Number i = 11. It's not a multiple of 3...
+Number i = 12. It is a multiple of 3!
+Number i = 15. It is a multiple of 3!
+Number i = 16. It's not a multiple of 3...
+Number i = 17. It's not a multiple of 3...
+Number i = 18. It is a multiple of 3!
+Number i = 19. It's not a multiple of 3...
+```
+
+---
+
+
 
 ---
 ### Инструкция goto и метки
