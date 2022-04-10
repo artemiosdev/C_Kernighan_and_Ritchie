@@ -777,6 +777,127 @@ Number factors: 2 3 3 5
 ```
 
 ---
+### Фильтрация потока чисел/последовательности
+
+```C
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+    int x;
+    printf("Number to split on digits:");
+    scanf("%d", &x);
+    while (x)
+    {
+        int digit = x%10;
+        if (digit < 5)
+            printf("%d ", digit);
+        x /= 10;
+    }
+
+    return 0;
+}
+```
+Result:
+
+```bash
+Number to split on digits: 123456789
+4 3 2 1 
+```
+
+---
+### Индуктивные функции
+Функция ***индуктивна*** если значение для удлиненной за счет добавления элемента Х последовательности можно выразить через значение этой же самой функции для исходной последовательности и через добавляемый элемент.
+
+<img alt="image" src="images/inductive_function.jpg"> </img>
+
+```C
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    int x;
+    scanf("%d", &x);
+
+    int n = 0, s = 0, p = 1;
+    while (x)
+    {
+        int digit = x%10;
+        n += 1;
+        s += digit;
+        p *= digit;
+        x /= 10;
+    }
+    printf("number = %d\n"
+           "sum = %d\n"
+           "production = %d\n", n, s, p);
+    return 0;
+}
+```
+
+Result:
+```bash
+123456789
+number = 9
+sum = 45
+production = 362880
+```
+production здесь это -> [Факториал](https://ru.wikipedia.org/wiki/%D0%A4%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%B8%D0%B0%D0%BB)
+
+***Факториал*** — функция, определённая на множестве неотрицательных целых чисел. Факториал натурального числа `n` определяется как произведение всех натуральных чисел от 1 до `n` включительно
+5! = 1 * 2 * 3 * 4 * 5 = 120
+
+---
+### Индуктивные функции: any of, all of
+
+<img alt="image" src="images/inductive_any_all.jpg"> </img>
+
+Благодаря  библиотеке `#include <iso646.h>` можем использовать "понятную" форму  операторов `or` это `||`, `and` это `&&`. 
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+#include <iso646.h>
+
+int main(int argc, char* argv[])
+{
+    int number;
+    scanf("%d", &number);
+
+    bool any = false;
+    bool all = true;
+    while (number)
+    {
+        int digit = number%10;
+        any = any or (digit < 5);
+        all = all and (digit < 5);
+        number /= 10;
+    }
+    printf("any = %d\n"
+           "all = %d\n", any, all);
+
+    return 0;
+}
+```
+Result:
+
+```bash
+12345
+any = 1
+all = 0
+```
+
+```bash
+1234
+any = 1
+all = 1
+```
+
+```bash
+7868796
+any = 0
+all = 0
+```
+---
 ### Массивы
 А теперь напишем программу, подсчитывающую по отдельности каждую цифру, символы-разделители (пробелы, табуляции и новые-строки) и все другие символы. Имеется двенадцать категорий вводимых символов. Удобно все десять счетчиков цифр хранить в массиве, а не в виде десяти отдельных переменных. Вот один из вариантов этой программы:
 
