@@ -1221,6 +1221,130 @@ Result:
  90  80  70  60  50  40  30  20  10  0 
 ```
 
+---
+Пример задачи
+
+```C
+#include <stdio.h>
+#define N 30
+
+int main() {
+    int a[N];
+    int i, j, k;
+
+    for (i = 0; i < N; ++i)
+        scanf("%d", &a[i]);
+
+    k = 0;
+    for (i = 0; i < N; ++i)
+        if (a[i] > 100 && a[i]%5 == 0)
+            k++;
+    for (i = 0; i < N; ++i)
+    {
+        if (a[i] > 100 && a[i]%5 == 0)
+            a[i] = k;
+        printf("%d ", a[i]);
+    }
+
+    return 0;
+}
+```
+
+Result:
+
+```bash
+
+```
+
+---
+Пример задачи
+
+```C
+#include <stdio.h>
+
+int main()
+{
+    int N, k26 = 0, k13 = 0, k2 = 0, k1 = 0;
+    scanf("%d", &N);
+
+    for(int i = 0; i < N; i++)
+    {
+        int x;
+        scanf("%d", &x);
+        if (x%26 == 0)
+            k26++;
+        else if (x%13 == 0)
+            k13++;
+        else if (x%2 == 0)
+            k2++;
+        else
+            k1++;
+    }
+
+    int m = k26*(k26-1)/2 + k26*(k1+k2+k13) + k2*k13;
+    printf("%d\n", m);
+
+    return 0;
+}
+```
+
+Result:
+
+```bash
+
+```
+
+---
+Добавление и удаление элемента в конец массива
+
+Добавление элемента в конец массива. Удаление элемента в конце массива. Разложение на множители с сохранением их в массиве.
+
+```C
+#include <stdio.h>
+
+// returns number of multipliers
+// buffer A should be enough for x factors
+int get_number_factors(int x, int A[])
+{
+    int top = 0;
+    int divisor = 2;
+    while (x != 1)
+    {
+        while (x%divisor == 0)
+        {
+            A[top] = divisor;
+            top += 1;
+            x /= divisor;
+        }
+        divisor += 1;
+    }
+    return top;
+}
+
+int main(int argc, char* argv[])
+{
+    int x;
+    printf("Enter number to factorize:");
+    scanf("%d", &x);
+    int A[100];
+    int N;
+    N = get_number_factors(x, A);
+
+    for(int i = 0; i < N; ++i)
+        printf("%d ", A[i]);
+    printf("\n");
+
+    return 0;
+}
+```
+
+Result:
+
+```bash
+
+```
+
+
 
 ---
 А теперь напишем программу, подсчитывающую по отдельности каждую цифру, символы-разделители (пробелы, табуляции и новые-строки) и все другие символы. Имеется двенадцать категорий вводимых символов. Удобно все десять счетчиков цифр хранить в массиве, а не в виде десяти отдельных переменных. Вот один из вариантов этой программы:
