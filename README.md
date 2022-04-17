@@ -1436,6 +1436,76 @@ Enter number to factorize: 90
 
 <img alt="image" src="images/insert_sort2.jpg"> </img>
 
+Аллоцировать память будем в `int A[ALLOCATE_SIZE];` с английского allocation - распределение. Смысл дословный. Управлять памятью, распределять ее, выделение блока памяти/буфера с выбранным размером `#define ALLOCATE_SIZE 1000`
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+#include <iso646.h>
+
+#define ALLOCATE_SIZE 1000
+//считываем введенные данные, возвращаем суммарное кол-во считанных элементов
+int input_array(int A[], int max_size)
+{
+    int top = 0;
+
+    while (true)
+    {
+        int x;
+        scanf("%d", &x);
+        if (x == 0 or top == max_size) break;
+        A[top] = x;
+        top++;
+    }
+    return top;
+}
+
+void print_array(int A[], int N)
+{
+    for(int i = 0; i < N; ++i)
+        printf("%3d ", A[i]);
+    printf("\n");
+}
+
+void insert_sort(int A[], int N)
+{
+    for(int i = 1; i < N; ++i)
+    {
+        int k = i;
+        while (k > 0 and A[k-1] > A[k])
+        {
+            int tmp = A[k-1];
+            A[k-1] = A[k];
+            A[k] = tmp;
+            k -= 1;
+        }
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    printf("Enter numbers:");
+    int A[ALLOCATE_SIZE];
+    int N;
+
+    N = input_array(A, ALLOCATE_SIZE);
+    insert_sort(A, N);
+    print_array(A, N);
+
+    return 0;
+}
+```
+
+Result:
+
+```bash
+Enter numbers: 5 4 3 2 1 0
+  1   2   3   4   5 
+  
+ Enter numbers: 6 3 5 9 1 3 0
+  1   3   3   5   6   9 
+```
+
 ---
 А теперь напишем программу, подсчитывающую по отдельности каждую цифру, символы-разделители (пробелы, табуляции и новые-строки) и все другие символы. Имеется двенадцать категорий вводимых символов. Удобно все десять счетчиков цифр хранить в массиве, а не в виде десяти отдельных переменных. Вот один из вариантов этой программы:
 
