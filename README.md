@@ -1438,6 +1438,7 @@ Enter number to factorize: 90
 
 Аллоцировать память будем в `int A[ALLOCATE_SIZE];` с английского allocation - распределение. Смысл дословный. Управлять памятью, распределять ее, выделение блока памяти/буфера с выбранным размером `#define ALLOCATE_SIZE 1000`
 
+Сортировка от меньшего к большему, по возрастанию
 ```C
 #include <stdio.h>
 #include <stdbool.h>
@@ -1502,9 +1503,126 @@ Result:
 Enter numbers: 5 4 3 2 1 0
   1   2   3   4   5 
   
- Enter numbers: 6 3 5 9 1 3 0
+Enter numbers: 6 3 5 9 1 3 0
   1   3   3   5   6   9 
+  
+Enter numbers: 8 9 9 4 3 7 8 7 0 
+  3   4   7   7   8   8   9   9 
 ```
+
+Сортировка от большего к меньшему, по убыванию. Мы меняем лишь знак `>` на `<`  в выражении `A[k-1] < A[k])` цикла `while (k > 0 and A[k-1] < A[k])`
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+#include <iso646.h>
+
+#define ALLOCATE_SIZE 1000
+
+//считываем введенные данные, возвращаем суммарное кол-во считанных элементов
+int input_array(int A[], int max_size)
+{
+    int top = 0;
+
+    while (true)
+    {
+        int x;
+        scanf("%d", &x);
+        if (x == 0 or top == max_size) break;
+        A[top] = x;
+        top++;
+    }
+    return top;
+}
+
+void print_array(int A[], int N)
+{
+    for(int i = 0; i < N; ++i)
+        printf("%3d ", A[i]);
+    printf("\n");
+}
+
+void insert_sort(int A[], int N)
+{
+    for(int i = 1; i < N; ++i)
+    {
+        int k = i;
+        while (k > 0 and A[k-1] < A[k])
+        {
+            int tmp = A[k-1];
+            A[k-1] = A[k];
+            A[k] = tmp;
+            k -= 1;
+        }
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    printf("Enter numbers:");
+    int A[ALLOCATE_SIZE];
+    int N;
+
+    N = input_array(A, ALLOCATE_SIZE);
+    insert_sort(A, N);
+    print_array(A, N);
+
+    return 0;
+}
+```
+
+Result:
+
+```bash
+Enter numbers: 1 2 3 4 5 6 0
+  6   5   4   3   2   1
+  
+Enter numbers: 8 3 1 5 7 3 9 0
+  9   8   7   5   3   3   1 
+  
+Enter numbers: 8 9 9 4 3 7 8 7 0
+  9   9   8   8   7   7   4   3 
+```
+
+---
+### Асимптотика сортировок. Сортировка подсчётом
+count_sort
+<img alt="image" src="images/count_sort.jpg"> </img>
+
+```C
+#include <stdio.h>
+#include <stdbool.h>
+#include <iso646.h>
+
+int main(int argc, char* argv[])
+{
+    int counters[10] = {0};
+    int x;
+
+    // частотный анализ
+    while (true)
+    {
+        scanf("%d", &x);
+        if (x == 10) break;  // Terminator is 10.
+        if (x < 0 or x > 9) continue;
+        counters[x] += 1; 
+    }
+
+    // сортировка от меньшего к большему 
+    for (x = 0; x < 10; ++x)
+        for (int i = 0; i < counters[x]; ++i)
+            printf("%3d ", x);
+
+    return 0;
+}
+```
+Terminator is 10. Result:
+
+```bash
+5 5 4 4 4 6 9 1 3 4 4 10
+  1   3   4   4   4   4   4   5   5   6   9 
+```
+
 
 ---
 А теперь напишем программу, подсчитывающую по отдельности каждую цифру, символы-разделители (пробелы, табуляции и новые-строки) и все другие символы. Имеется двенадцать категорий вводимых символов. Удобно все десять счетчиков цифр хранить в массиве, а не в виде десяти отдельных переменных. Вот один из вариантов этой программы:
