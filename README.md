@@ -4098,6 +4098,110 @@ Move disk 1 from pin 1 to 2.
 ```
 
 ---
+### Динамическое программирование
+
+<img alt="image" src="images/fibonacci_tree.jpg"> </img>
+
+Основная идея динамического программирования состоит в том, чтобы решить каждую подзадачу только один раз, сократив тем самым количество вычислений.
+
+Создадим массив, определим как `static int cache[100] = {0};`, `static` - статический, он живет между вызывами функций независимо от них.
+
+```C
+#include <stdio.h>
+#include <time.h>
+
+static int cache[100] = {0};
+
+// динамическое программирование сверху
+int fib(int n)
+{
+    if (n <= 1) return n;
+    if (cache[n] == 0)
+        cache[n] = fib(n-1) + fib(n-2);
+    return cache[n];
+}
+
+// динамическое программирование снизу
+int fib_dynamic(int n)
+{
+    int Fib[n+1];
+    Fib[0] = 0;
+    Fib[1] = 1;
+    for (int i = 2; i <= n; ++i)
+        Fib[i] = Fib[i-1] + Fib[i-2];
+    return Fib[n];
+}
+
+int main(int argc, char* argv[])
+{
+    for (int n = 1; n < 50; n += 1)
+    {
+        clock_t time1 = clock();
+        int result = fib_dynamic(n);
+        clock_t time2 = clock();
+        int delta_ms = (time2 - time1)*1000/CLOCKS_PER_SEC;
+        printf("fib(%d) = %d,\t time = %d ms\n",
+               n, result, delta_ms);
+    }
+
+    return 0;
+}
+```
+Result:
+
+```bash
+fib(1) = 1,      time = 0 ms
+fib(2) = 1,      time = 0 ms
+fib(3) = 2,      time = 0 ms
+fib(4) = 3,      time = 0 ms
+fib(5) = 5,      time = 0 ms
+fib(6) = 8,      time = 0 ms
+fib(7) = 13,     time = 0 ms
+fib(8) = 21,     time = 0 ms
+fib(9) = 34,     time = 0 ms
+fib(10) = 55,    time = 0 ms
+fib(11) = 89,    time = 0 ms
+fib(12) = 144,   time = 0 ms
+fib(13) = 233,   time = 0 ms
+fib(14) = 377,   time = 0 ms
+fib(15) = 610,   time = 0 ms
+fib(16) = 987,   time = 0 ms
+fib(17) = 1597,  time = 0 ms
+fib(18) = 2584,  time = 0 ms
+fib(19) = 4181,  time = 0 ms
+fib(20) = 6765,  time = 0 ms
+fib(21) = 10946,         time = 0 ms
+fib(22) = 17711,         time = 0 ms
+fib(23) = 28657,         time = 0 ms
+fib(24) = 46368,         time = 0 ms
+fib(25) = 75025,         time = 0 ms
+fib(26) = 121393,        time = 0 ms
+fib(27) = 196418,        time = 0 ms
+fib(28) = 317811,        time = 0 ms
+fib(29) = 514229,        time = 0 ms
+fib(30) = 832040,        time = 0 ms
+fib(31) = 1346269,       time = 0 ms
+fib(32) = 2178309,       time = 0 ms
+fib(33) = 3524578,       time = 0 ms
+fib(34) = 5702887,       time = 0 ms
+fib(35) = 9227465,       time = 0 ms
+fib(36) = 14930352,      time = 0 ms
+fib(37) = 24157817,      time = 0 ms
+fib(38) = 39088169,      time = 0 ms
+fib(39) = 63245986,      time = 0 ms
+fib(40) = 102334155,     time = 0 ms
+fib(41) = 165580141,     time = 0 ms
+fib(42) = 267914296,     time = 0 ms
+fib(43) = 433494437,     time = 0 ms
+fib(44) = 701408733,     time = 0 ms
+fib(45) = 1134903170,    time = 0 ms
+fib(46) = 1836311903,    time = 0 ms
+fib(47) = -1323752223,   time = 0 ms
+fib(48) = 512559680,     time = 0 ms
+fib(49) = -811192543,    time = 0 ms
+```
+
+---
 ### Препроцессор языка Си
 Некоторые возможности языка Си обеспечиваются препроцессором, который работает на первом шаге компиляции. Наиболее часто используются две возможности: `#include`, вставляющая содержимое некоторого файла во время компиляции, и `#define`, заменяющая одни текстовые последовательности на другие.
 
