@@ -4458,26 +4458,35 @@ printf("x/y=%g\n", x/y);
 
 ```C
 #include <stdio.h>
-int main(int argc, char* argv[])
+int main (int argc, char *argv[])
 {
-     int i = 10;
-     int *pi = &i;
-     int **ppi = &pi;
-     int ***pppi = &ppi;
-			printf("%d\n", i); 
-			*pi = 20; 						
-			printf("%d\n", i); 
-			**ppi = 30; 
-			printf("%d\n", i); 
-			***pppi = 40; 
-			printf("%d\n", i);
-			return 0; 
+  int i = 10;
+  int *pi = &i;
+  int **ppi = &pi;
+  int ***pppi = &ppi;
+  
+  printf ("%d\n", i);
+  *pi = 20;
+  
+  printf ("%d\n", i);
+  **ppi = 30;
+  
+  printf ("%d\n", i);
+  ***pppi = 40;
+  
+  printf ("%d\n", i);
+  
+  return 0;
 }
+
 ```
 Result:
 
 ```bash
-добавить код
+10
+20
+30
+40
 ```
 
 При помощи арифметических операций мы можем вычислять адреса соседних ячеек. 
@@ -4494,30 +4503,37 @@ Result:
 
 ```C
 #include <stdio.h>
-   int main(int argc, char* argv[])
-   {
-			int A[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-			printf("%d\n", *A);
-			
-			int *p = A + 5; 
-			printf("%d\n", p[-1]);
-			
-			int *q = A + 7; 
-			if (p > q)
-				printf("p > q\n"); 
-			else
-				printf("p <= q\n");
-				
-			printf("p - q = %d", p-q);
-			
-			return 0; 
-	}
+
+int main (int argc, char *argv[])
+{
+  int A[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+  printf ("%d\n", *A);
+
+  int *p = A + 5;
+  printf ("%d\n", p[-1]);
+
+  int *q = A + 7;
+  if (p > q)
+    printf ("p > q\n");
+  else
+    printf ("p <= q\n");
+
+  printf ("p - q = %d", p - q);
+
+  return 0;
+}
+
 ```
 Result:
 
 ```bash
-добавить код
+1
+5
+p <= q
+p - q = -2
 ```
+
+---
 
 
 
