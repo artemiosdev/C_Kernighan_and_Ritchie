@@ -4652,6 +4652,110 @@ y = 888
 ```
 
 ---
+### Выделение и освобождение динамической памяти
+
+<img alt="image" src="images/dynamic_memory_int.jpg"> </img>
+
+Стек это плохое место для хранения большого объема данных. 
+
+`malloc(N);` - запросить память, аллоцировать, запрос на `N` байт, и каждый раз надо мерить память в байтах при его использовании. В данном случаи рассматриваем `char *A = (char *)malloc(N);` так как `char` занимает только 1 байт.
+
+Например, используя 32-х битный компилятор, мы можем нашей программой "выделить/откусить" памяти за раз, только меньше 2 Гб , больше операционная система Windows нам не позволит, так как 2 в степени 32 примерно равняется 4 Гпб (4 млрд байт), + стоят ограничения.
+
+Проверка `if (NULL == A)` нужна всегда, после непосредственной попытки выделить память, так как операционная память может ее и не выделить и без проверки
+будет ошибка и вылет.
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+int main (int argc, char *argv[])
+{
+  int N;
+  printf ("Enter size of array to create:");
+  scanf ("%d", &N);
+
+  char *A = (char *) malloc (N);
+  if (NULL == A)
+    {
+      printf ("OS didn't gave memory. Exit...\n");
+      exit (1);
+    }
+  for (int i = 0; i < N; ++i)
+    A[i] = i;
+  printf ("Array A successfully created!\n");
+  system ("pause");
+
+  return 0;
+}
+```
+
+Result:
+
+```bash
+Enter size of array to create:1000000
+Array A successfully created!
+sh: 1: pause: not found
+```
+
+Рассмотрим пример с `int`. Выделим память для `int *A = (int *)malloc(N*sizeof(int));` с помощью функции `malloc`. В отличии `calloc(N, size)` память не забивает ноликами, и не трогает ее, т.е что в ней было то и остается (чаще всего мусор).
+
+функция `sizeof(int)` принимает именно тип, и возвращает количество байтов сколько весит этот тип. Вычисляется во время компиляции.
+
+Проверка `if (NULL == A)` нужна всегда, после непосредственной попытки выделить память, так как операционная память может ее и не выделить и без проверки будет ошибка и вылет.
+
+Чтобы освобождать память после каждой итерации используем функцию `free(A);`
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+int main (int argc, char *argv[])
+{
+  int N = 50000000;
+
+  for (int k = 0; k < 1000; ++k)
+    {
+      int *A = (int *) malloc (N * sizeof (int));
+      if (NULL == A)
+	{
+	  printf ("OS didn't gave memory. Exit...\n");
+	  exit (1);
+	}
+      printf ("Allocate array - OK. iteration %d.\n", k);
+      for (int i = 0; i < N; ++i)
+	A[i] = i;
+      //free(A); //TODO: uncomment this line
+    }
+  printf ("Program is on finish!\n");
+  system ("pause");
+
+  return 0;
+}
+
+```
+Result:
+
+```bash
+Allocate array - OK. iteration 0.
+Allocate array - OK. iteration 1.
+Allocate array - OK. iteration 2.
+Allocate array - OK. iteration 3.
+Allocate array - OK. iteration 4.
+Allocate array - OK. iteration 5.
+Allocate array - OK. iteration 6.
+Allocate array - OK. iteration 7.
+Allocate array - OK. iteration 8.
+Allocate array - OK. iteration 9.
+Allocate array - OK. iteration 10.
+```
+
+Разные алоцированные кусти выделенной памяти ***нельзя*** сравнивать/вычитать (как выше мы делали) если они получены при помощи итераций цикла или за разные промежутки времени, ***можно*** сравнивать/вычитать только алоцированные кусти выделенной памяти полученные одновременно у системы, т.е сразу за один раз.
+
+Есть также функция `calloc(N, size)` для создания массивов с количеством `N` и размером `size`. В отличии от `malloc` она забивает память 0 ноликами
+
+---
+
 
 
 
