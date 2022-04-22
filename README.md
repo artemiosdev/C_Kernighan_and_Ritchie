@@ -1000,6 +1000,8 @@ minimum position= 4
 
 Самая быстрая структура данных так как она родная для RAM.
 
+В Си ***строки*** - это массивы символов.
+
 <img alt="image" src="images/array.jpg"> </img>
 
 Создадим простой массив:
@@ -4653,6 +4655,7 @@ y = 888
 
 ---
 ### Выделение и освобождение динамической памяти
+Распределение ресурсов операционной системой. Выделение динамической памяти: malloc(). Функция sizeof(тип), вычисляемая при компиляции. Необходимость освобождения памяти: free(). Независимость выделяемых отрезков памяти. Чем отличается функция calloc().
 
 <img alt="image" src="images/dynamic_memory_int.jpg"> </img>
 
@@ -4755,6 +4758,132 @@ Allocate array - OK. iteration 10.
 Есть также функция `calloc(N, size)` для создания массивов с количеством `N` и размером `size`. В отличии от `malloc` она забивает память 0 ноликами
 
 ---
+### Техника безопасности при работе с памятью
+
+В Си программист сам отвечает и ответственен за то, когда память выделять и когда ее освобождать.
+
+Ошибки работы с памятью в Си: 
+
+***Segmentation fault*** - во время выполнения программмы происходит обращение к недоступному сегменту памяти. Программа сразу же снимается с выполнения. Пример ниже.
+
+Инициализация указателей: NULL. Проверка корректности адреса. Ответственность за освобождение памяти.
+
+`int *p = NULL;` - для того чтобы указатель имел какое-то значение, "такое специальное никуда", такой указатель нельзя разыменовывать, и это предсказуемый Segmentation fault по примеру ниже. NULL кладем в указатель до тех пор пока, нам не надо инициализировать. 
+
+`#include <assert.h>` добавляет `assert(pointer);` проверяющий и сообщающий нам о null.
+
+`int x = 100;` и  `scanf("%d", x);` нужно ипользовать `х` с `&` так как функция `scanf` ожидает куда положить введенное значение с клавиатуры в память, а без `&` она не понимает куда положить значение так как нет адреса и выскакивает `Segmentation fault`
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+void foo(int *pointer)
+{
+    assert(pointer);
+    *pointer = 0; //potential Segmentation fault
+}
+
+int main()
+{
+    int *p = NULL;  // Uninitialized pointer!
+    //*p = 10; // Using it => Segmentation fault!
+
+    //foo(p);  // Another use of uninitialized pointer => Segmentation fault!
+
+    int x = 100;
+    scanf("%d", x); // Very popular Segmentation fault.
+    return 0;
+}
+```
+
+***Memory leak*** - утечка памяти. Пример ниже.
+В примере видим безответственные функции которые берут и выделяют память и не отвечают за нее, освобождать память надо вызывающей стороне, а функции без ответственные по отношению к памяти. Не хватает  функции `free();`.
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Danger function: it's not responsible for
+// the memory it allocates for the duplicate!
+int* duplicate_array(int *A, size_t N)
+{
+    int * B = (int *) malloc(sizeof(int)*N);
+    for(size_t i = 0; i < N; i++)
+        B[i] = A[i];
+    printf(" duplicate_array() allocated memory for the duplicate.\n");
+    return B;
+}
+
+int main()
+{
+    printf("Calling irresponsible function duplicate_array():\n");
+    int A[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int *B = duplicate_array(A, 10);
+    for (int i = 0; i < 10; ++i)
+        printf("%d\t", B[i]);
+
+    printf("Since caller function is not taking responsibility by itself,\n");
+    printf(" memory for the array above will never be released...\n\n");
+
+    printf("The same situation for the standard function strdup():\n");
+    char *hello = "Hello, World!";
+    char *message = strdup(hello);
+    printf("Strdup allocated memory for this message: \"%s\"\n", message);
+    printf("It'll never be released...\n\n");
+
+
+// выделение памяти идет в цикле, а освобождение однократно вне цикла.
+    int *p;
+    for (int i = 0; i < 10; i++)
+    {
+        p = (int *)malloc(sizeof(int));
+        printf("Allocating memory many times in cycle.\n");
+        *p = i;
+    }
+    free(p);
+    printf("But releasing it just once...\n");
+    return 0;
+}
+```
+Result:
+
+```bash
+Calling irresponsible function duplicate_array():
+ duplicate_array() allocated memory for the duplicate.
+1       2       3       4       5       6       7       8       9       10      Since caller function is not taking responsibility by itself,
+ memory for the array above will never be released...
+
+The same situation for the standard function strdup():
+Strdup allocated memory for this message: "Hello, World!"
+It'll never be released...
+
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+Allocating memory many times in cycle.
+But releasing it just once...
+```
+
+Что делать? 
+
+- Инициализировать указатели NULL и по возможности проверять, что они не NULL перед тем как их использовать. 
+
+- Быть аккуратными с динамической памятью. Отслеживать содержимое функций.
+
+В C++ есть ***Smart pointer*** - объекты контролирующие кто и сколько раз ссылается на ячейку памяти и когда она становится ненужной она удаляется. Это объект контролирующий работу памяти.
+
+***Garbage collector *** - механизм реализован в C#/Python/Java (его не в C/C++) сборщик мусора, он сам вычисляет и очищает память.
+
+---
+### 
 
 
 
