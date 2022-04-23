@@ -4886,7 +4886,12 @@ But releasing it just once...
 
 ---
 ### Двумерные массивы: обычные и динамические
-Обычные двумерные массивы в С. Передача двумерного массива в функцию. Динамические двумерные массивы в С. Выделение и освобождение памяти для динамического двумерного массива. Передача динамического двумерного массива в функцию и возврат из функции.
+Обычные двумерные массивы в С. 
+<img alt="image" src="images/2d_array.jpg"> </img>
+
+Передача двумерного массива в функцию. Динамические двумерные массивы в С. Выделение и освобождение памяти для динамического двумерного массива. Передача динамического двумерного массива в функцию и возврат из функции.
+
+<img alt="image" src="images/dynamic_2d_array.jpg"> </img>
 
 ```C
 #include <stdio.h>
@@ -4933,7 +4938,13 @@ int main()
 Result:
 
 ```bash
+    1    2    3    4    5
+    6    7    8    9   10
+   11   12   13   14   15
+   16   17   18   19   20
 
+ Direct memory access:
+  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
 ```
 
 ```C
@@ -4950,10 +4961,8 @@ void dynamic_array_print(int **A, size_t N, size_t M)
     }
 }
 
-/*
-    return pointer on 2d dynamic array
-    !allocates memory -> to be freed later
-*/
+/* return pointer on 2d dynamic array
+!allocates memory -> to be freed later */
 int ** dynamic_array_alloc(size_t N, size_t M)
 {
     int **A = (int **)malloc(N*sizeof(int *));
@@ -4985,7 +4994,7 @@ void dynamic_array_test(size_t N, size_t M)
     /*memory investigation*/
     printf("\n Pointers to lines: ");
     for(int **p = A; p < A + 3; p++)
-        printf("%10d", (long int)*p);
+        printf("%10ld", (long int)*p);
     printf("\n Direct memory access:\n");
     for(int *p = (int*)*A; p < (int*)*A + 25; p++)
         printf("%d\t", *p);
@@ -5004,10 +5013,17 @@ int main()
 Result:
 
 ```bash
+    1    2    3    4    5
+    6    7    8    9   10
+   11   12   13   14   15
+   16   17   18   19   20
 
+ Pointers to lines: 947764505975849477645059761694776450597648
+ Direct memory access:
+1       2       3       4       5       0       33      0       6       7       8       9       10      0      33       0       11      12      13      14      15      0       33      0       16
 ```
 
-
+<img alt="image" src="images/another_2d_array_example.jpg"> </img>
 
 
 
