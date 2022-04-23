@@ -4778,6 +4778,7 @@ Allocate array - OK. iteration 10.
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
 void foo(int *pointer)
 {
     assert(pointer);
@@ -4852,7 +4853,8 @@ Result:
 ```bash
 Calling irresponsible function duplicate_array():
  duplicate_array() allocated memory for the duplicate.
-1       2       3       4       5       6       7       8       9       10      Since caller function is not taking responsibility by itself,
+1       2       3       4       5       6       7       8       9       10      
+Since caller function is not taking responsibility by itself,
  memory for the array above will never be released...
 
 The same situation for the standard function strdup():
@@ -4883,9 +4885,127 @@ But releasing it just once...
 ***Garbage collector *** - механизм реализован в C#/Python/Java (его не в C/C++) сборщик мусора, он сам вычисляет и очищает память.
 
 ---
-### 
+### Двумерные массивы: обычные и динамические
+Обычные двумерные массивы в С. Передача двумерного массива в функцию. Динамические двумерные массивы в С. Выделение и освобождение памяти для динамического двумерного массива. Передача динамического двумерного массива в функцию и возврат из функции.
 
+```C
+#include <stdio.h>
+#include <stdlib.h>
 
+#define MATRIX_HEIGHT 4
+#define MATRIX_WIDTH 5
+
+void static_array_print(int A[][MATRIX_WIDTH], size_t N)
+{
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < MATRIX_WIDTH; j++) {
+            printf("%*d", 5, A[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void static_array_test(size_t N)
+{
+    int A[N][MATRIX_WIDTH];
+    int x = 1;
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < MATRIX_WIDTH; j++) {
+            A[i][j] = x;
+            x += 1;
+        }
+    }
+    static_array_print(A, N);
+
+    /*memory investigation*/
+    printf("\n Direct memory access:\n");
+    for(int *p = (int *)A; p < (int *)A + 20; p++)
+        printf("%3d", *p);
+    printf("\n\n");
+}
+
+int main()
+{
+    static_array_test(MATRIX_HEIGHT);
+    return 0;
+}
+```
+Result:
+
+```bash
+
+```
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+void dynamic_array_print(int **A, size_t N, size_t M)
+{
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < M; j++) {
+            printf("%*d", 5, A[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+/*
+    return pointer on 2d dynamic array
+    !allocates memory -> to be freed later
+*/
+int ** dynamic_array_alloc(size_t N, size_t M)
+{
+    int **A = (int **)malloc(N*sizeof(int *));
+    for(int i = 0; i < N; i++) {
+        A[i] = (int *)malloc(M*sizeof(int));
+    }
+    return A;
+}
+
+void dynamic_array_free(int **A, size_t N)
+{
+    for(int i = 0; i < N; i++) {
+        free(A[i]);
+    }
+    free(A);
+}
+
+void dynamic_array_test(size_t N, size_t M)
+{
+    int **A = dynamic_array_alloc(N, M);
+    int x = 1;
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < M; j++) {
+            A[i][j] = x;
+            x += 1;
+        }
+    }
+    dynamic_array_print(A, N, M);
+    /*memory investigation*/
+    printf("\n Pointers to lines: ");
+    for(int **p = A; p < A + 3; p++)
+        printf("%10d", (long int)*p);
+    printf("\n Direct memory access:\n");
+    for(int *p = (int*)*A; p < (int*)*A + 25; p++)
+        printf("%d\t", *p);
+    dynamic_array_free(A, N);
+}
+
+int main()
+{
+    int matrix_height = 4;
+    int matrix_width = 5;
+
+    dynamic_array_test(matrix_height, matrix_width);
+    return 0;
+}
+```
+Result:
+
+```bash
+
+```
 
 
 
