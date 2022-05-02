@@ -1081,6 +1081,8 @@ minimum position= 4
 
 ***Массив*** - структура данных, в которой хранятся однотипные данные, располагаясь в памяти последовательно друг за другом, в порядке возрастания индексов.
 
+Важно, в СИ нельзя изменить размер заданного массива, как в других языках. Т.е нельзя добавлять элементы бесконечно тем самым растягивая массив, будет ошибка. Можно сделать другой массив большего размера и скопировать значения.
+
 Первый элемент имеет индекс 0.
 
 ***RAM*** (Random Access Memory, с англ. — «Запоминающее устройство с произвольным доступом») — оперативная память. Работает мгновенно с массивами. Для массива разом выделяется память, и его отдельные ячейки не рассматриваются., НО могут рассматриваться отдельно во время работы непосредственно с ними (индексами). Аналогия шкафа с выдвижными ящиками.
@@ -4893,6 +4895,23 @@ Allocate array - OK. iteration 10.
 
 Есть также функция `calloc(N, size)` для создания массивов с количеством `N` и размером `size`. В отличии от `malloc` она забивает память 0 ноликами
 
+```C
+#include <stdlib.h>
+int main (void)
+{
+  int *x; // инициализируем адресные переменные для целых чисел
+  int *y;
+  x = malloc (sizeof (int)); // выделяем память для int x
+  *x = 42; // иди по адресу х и положи туда 42
+  
+  *y = 13; // ошибка, нет доступа к этой ячейки памяти, 
+  // память не выделена системой, обращаемся к мусорному знаничению
+  
+  y = x;   // y присваивается адрес x
+  *y = 13; // иди по адресу y и положи туда 1, тот же адрес, что и у х
+}
+```
+
 ---
 ### Техника безопасности при работе с памятью
 
@@ -4909,6 +4928,9 @@ Allocate array - OK. iteration 10.
 `#include <assert.h>` добавляет `assert(pointer);` проверяющий и сообщающий нам о null.
 
 `int x = 100;` и  `scanf("%d", x);` нужно ипользовать `х` с `&` так как функция `scanf` ожидает куда положить введенное значение с клавиатуры в память, а без `&` она не понимает куда положить значение так как нет адреса и выскакивает `Segmentation fault`
+
+`*` - иди по этому адресу
+`&` амперсант - выясни адрес переменной
 
 ```C
 #include <stdio.h>
@@ -4933,9 +4955,55 @@ int main()
     return 0;
 }
 ```
+или др пример
+
+```C
+// Reads a number from the user into an int.
+// Demonstrates scanf and address-of operator.      
+#include <stdio.h>
+
+int main(void)
+{
+    int x;
+    printf("Number please: ");
+    scanf("%i", &x);
+    printf("Thanks for the %i!\n", x);
+}
+```
+Result:
+
+```bash
+Number please: 50
+Thanks for the 50!
+```
+
+и выход за пределы массива
+```C
+// Reads a string from the user into memory it shouldn't.
+//Demonstrates possible attack!
+#include <stdio.h>
+
+int main(void)
+{
+    char buffer[16];
+    printf("String please: ");
+    scanf("%s", buffer);
+    printf("Thanks for the %s!\n", buffer);
+}
+```
+Result: Segmentation fault error за превышение объема заданного размера массива
+
+```bash
+String please: thisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentence
+Thanks for the thisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentencethisisaveryverylongsentence!
+*** stack smashing detected ***: terminated
+```
+
+---
 
 ***Memory leak*** - утечка памяти. Пример ниже.
-В примере видим безответственные функции которые берут и выделяют память и не отвечают за нее, освобождать память надо вызывающей стороне, а функции без ответственные по отношению к памяти. Не хватает  функции `free();`.
+В примере видим безответственные функции которые берут и выделяют память и не отвечают за нее, освобождать память надо вызывающей стороне, а функции безответственные по отношению к памяти. Не хватает  функции `free();`.
+Т.е мы часто запрашиваем память, но редко освобождаем ее, а это важно так как нет сборщика мусора в СИ. 
 
 ```C
 #include <stdio.h>
